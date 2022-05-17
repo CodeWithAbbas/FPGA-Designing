@@ -1,0 +1,39 @@
+library IEEE;
+use IEEE.Std_logic_1164.all;
+use IEEE.Numeric_Std.all;
+
+entity Syn_flip_flop_tb is
+end;
+
+architecture bench of Syn_flip_flop_tb is
+
+  signal D: std_logic;
+  signal reset: std_logic:='1';
+  signal clk: std_logic:='0';
+  signal Q: std_logic ;
+
+  constant clock_period: time := 20 ns;
+ 
+
+begin
+
+  FF1: entity work.Syn_flip_flop port map ( D => D,
+                                reset => reset,
+                                clk   => clk,
+                                Q     => Q );
+
+    -- provide clock
+	clk <= not clk after clock_period/2;
+    -- Input Initialization
+	D <= '1';
+  stimulus: process
+  begin
+	wait for 20 ns;
+  
+	-- Provide reset
+	reset <= '0';
+    
+  end process;
+
+end;
+  
