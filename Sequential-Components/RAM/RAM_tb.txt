@@ -1,0 +1,67 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+use ieee.numeric_std.all;
+use ieee.std_logic_unsigned.all;
+
+entity RAM_tb is
+Generic 
+(     
+	addr_width  	: integer := 3;  -- Address is 2 bits
+    data_width   	: integer := 4   -- Data is 8 bits
+    -- 2^Addr_width * data_width = 2^2 * 8 RAM = 4 * 8 RAM => 4 Memory Locations each having 8 bits of data
+);
+end;
+
+architecture bench of RAM_tb is
+
+  signal ADDR: std_logic_vector(addr_width-1 downto 0);
+  signal DIN: std_logic_vector(data_width-1 downto 0);
+  signal WE: std_logic:='0';
+  signal CLK: std_logic:='1';
+  signal DOUT: std_logic_vector(data_width-1 downto 0) ;
+
+  constant clk_period: time := 10 ns;
+
+  -- Ram Memory Array
+  type ram_array is array (0 to 2**addr_width-1) of std_logic_vector (data_width-1 downto 0);
+  constant ram_memory : ram_array := (x"4",x"1",x"6", x"3", x"9", x"2", x"8", x"5");  -- All memory locations initialze with 0
+
+begin
+
+  R1: entity work.RAM generic map (addr_width=>3,data_width=>4) port map (ADDR=> ADDR,DIN=> DIN,WE=>WE,CLK=>CLK,DOUT=>DOUT);
+
+	-- Clock 
+	clk <= not clk after clk_period/2;
+ 
+   -- Stimulus process
+    stim_proc: process
+	begin		
+		-- hold reset state for 100 ns
+		wait for clk_period;
+	  
+		WE <= '1';  -- Writing Operation
+        
+		-- insert stimulus here 
+	
+		-- Loop for Writing Data to RAM memory	  
+		for i in 0 to 7 loop
+			ADDR <= std_logic_vector(to_unsigned(i, ADDR'Length));   -- Address will take value of i i.e Address <= i 
+			DIN <= ram_memory(i);  -- Ram Array index one by one and take values from Ram_Memory Array
+			wait for clk_period;
+		end loop;
+      
+		WE <= '0';   -- Reading Operation
+		wait for 10 ns;
+      
+		-- Loop for Reading Data from RAM memory	  
+		for J in 0 to 7 loop  
+			ADDR <= std_logic_vector(to_unsigned(J, ADDR'Length));
+			wait for 10 ns;
+			DOUT <= ram_memory(conv_integer(ADDR));   -- Find the Ram_memory and take Address value as a argument i.e At Address = 5 in Rem_memory Array contain Any Value assign to Dout 
+			wait for 20 ns;
+        end loop;
+    
+        wait for 10 ns;
+    end process;
+ end;
+  
