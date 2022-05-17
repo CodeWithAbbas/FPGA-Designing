@@ -1,0 +1,21 @@
+LIBRARY ieee ;
+USE ieee.std_logic_1164.all ;
+
+ENTITY Encoder IS
+	PORT 
+	(	-- In
+		w	: IN 	STD_LOGIC_VECTOR(3 DOWNTO 0) ;
+		-- Out
+		y	: OUT 	STD_LOGIC_VECTOR(1 DOWNTO 0) ;
+		z	: OUT 	STD_LOGIC ) ;
+END Encoder ;
+
+ARCHITECTURE arch OF Encoder IS
+BEGIN
+    -- Priority Encoder
+	y <="11" WHEN (w(3) = '1') ELSE    -- Just looking for the W(3) bit if it is High, irrespective of other bits of W it will select W3 
+		"10" WHEN (w(2) = '1') ELSE    -- if W3 is Low, then Just looking for the W(2) bit if it is High, irrespective of other bits of W it will select W2 
+		"01" WHEN (w(1) = '1') ELSE
+		"00" ;
+	z <= '0' WHEN (w = "0000") ELSE '1' ;
+END arch ;
